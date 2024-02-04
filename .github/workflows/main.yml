@@ -1,6 +1,9 @@
 name: Setup Proxy and Ping Website
 
-on: [push]
+on:
+  schedule:
+  - cron: '*/60 * * * *'
+  workflow_dispatch:
 
 jobs:
   setup-and-ping:
