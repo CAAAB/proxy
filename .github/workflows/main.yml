@@ -1,8 +1,8 @@
 name: Setup Proxy and Ping Website
 
 on:
-  schedule:
-  - cron: '*/60 * * * *'
+  #schedule:
+  #- cron: '*/60 * * * *'
   workflow_dispatch:
 
 concurrency: 
