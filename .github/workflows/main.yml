@@ -5,12 +5,21 @@ on:
   - cron: '*/60 * * * *'
   workflow_dispatch:
 
+concurrency: 
+  group: start-app-group
+  cancel-in-progress: false
+
 jobs:
   setup-and-ping:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+      
+    - name: Install ngrok
+      run: |
+        unzip -o ngrok-stable-linux-amd64.zip
+        ./ngrok authtoken ${{ secrets.NGROK_TOKEN }}
 
     - name: Ping My Website
       env:
@@ -23,9 +32,17 @@ jobs:
     - name: Start mitmproxy in pass-through mode
       run: nohup mitmproxy --mode regular > /dev/null 2>&1 &
 
+    - name: Start ngrok
+      run: |
+        nohup ./ngrok http 8080 & # Tunnel to mitmproxy's default port
+        sleep 10 # Give ngrok some time to establish the tunnel
+        NGROK_TUNNEL_URL=$(curl --silent --max-time 10 http://localhost:4040/api/tunnels | jq -r .tunnels[0].public_url)
+        echo "Ngrok tunnel URL: $NGROK_TUNNEL_URL"
+        echo "NGROK_TUNNEL_URL=$NGROK_TUNNEL_URL" >> $GITHUB_ENV
+
     - name: Infinite Loop
       run: |
         while true; do
-          sleep 60
+          sleep 600
         done
 
