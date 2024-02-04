@@ -1,0 +1,21 @@
+name: Setup Proxy and Ping Website
+
+on: [push]
+
+jobs:
+  setup-and-ping:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Ping My Website
+      env:
+        MY_WEBSITE: ${{ secrets.MYWEBSITE }}
+      run: curl "${MY_WEBSITE}"
+      
+    - name: Install mitmproxy
+      run: sudo apt-get update && sudo apt-get install mitmproxy -y
+
+    - name: Start mitmproxy in pass-through mode
+      run: nohup mitmproxy --mode regular > /dev/null 2>&1 &
