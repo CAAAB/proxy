@@ -22,3 +22,10 @@ jobs:
 
     - name: Start mitmproxy in pass-through mode
       run: nohup mitmproxy --mode regular > /dev/null 2>&1 &
+
+    - name: Infinite Loop
+      run: |
+        while true; do
+          sleep 60
+        done
+
